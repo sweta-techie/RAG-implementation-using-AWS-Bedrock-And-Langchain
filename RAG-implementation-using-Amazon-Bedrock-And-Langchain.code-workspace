@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "RAG-implementation-using-AWS-Bedrock-And-Langchain",
+			"path": "../../RAG-implementation-using-AWS-Bedrock-And-Langchain"
+		}
+	],
+	"settings": {}
+}
