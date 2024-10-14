@@ -65,9 +65,8 @@ def get_vector_store(docs):
 
 
 def get_llm():
-    # Use the correct text generation model
     llm = Bedrock(
-        model_id="amazon.titan-text-express-v1",  # Corrected model_id
+        model_id="amazon.titan-text-express-v1",
         client=bedrock,
         model_kwargs={
             'maxTokenCount': 512,
@@ -82,17 +81,21 @@ PROMPT = PromptTemplate(
 )
 
 def get_response_llm(llm, vectorstore_faiss, query):
-    qa = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=vectorstore_faiss.as_retriever(
-            search_type="similarity", search_kwargs={"k": 3}
-        ),
-        return_source_documents=True,
-        chain_type_kwargs={"prompt": PROMPT}
-    )
-    answer = qa({"query": query})
-    return answer['result']
+    try:
+        qa = RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=vectorstore_faiss.as_retriever(
+                search_type="similarity", search_kwargs={"k": 3}
+            ),
+            return_source_documents=True,
+            chain_type_kwargs={"prompt": PROMPT}
+        )
+        answer = qa({"query": query})
+        return answer['result']
+    except Exception as e:
+        st.error(f"An error occurred during inference: {e}")
+        st.write("Detailed Bedrock error: ", str(e))
 
 def main():
     st.set_page_config("RAG Demo")
