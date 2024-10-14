@@ -104,19 +104,24 @@ def main():
     # PDF uploader
     uploaded_files = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
 
+    # Flag to trigger vector storage automatically
+    vector_store_trigger = False
+
+    # Check if files have been uploaded
+    if uploaded_files:
+        with st.spinner("Processing..."):
+            docs = process_uploaded_pdfs(uploaded_files)
+            vector_store_trigger = True  # Set the trigger for storing vectors automatically
+
+        # Automatically trigger the vector store creation
+        if vector_store_trigger:
+            with st.spinner("Creating vector store..."):
+                get_vector_store(docs)
+                st.success("Vector store created from uploaded PDFs!")
+
     user_question = st.text_input("Ask a Question from the PDF Files")
 
-    with st.sidebar:
-        st.title("Update or Create Vector Store:")
-        if st.button("Store Vector"):
-            if uploaded_files:
-                with st.spinner("Processing..."):
-                    docs = process_uploaded_pdfs(uploaded_files)
-                    get_vector_store(docs)
-                    st.success("Vector store created from uploaded PDFs!")
-            else:
-                st.error("Please upload PDF files to create vector store.")
-
+    # Send button for asking questions
     if st.button("Send"):
         if not user_question:
             st.error("Please enter a question.")
