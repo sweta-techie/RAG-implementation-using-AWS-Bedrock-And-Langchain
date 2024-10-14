@@ -52,11 +52,17 @@ def process_uploaded_pdfs(uploaded_files):
     return docs
 
 def get_vector_store(docs):
-    vectorstore_faiss = FAISS.from_documents(
-        docs,
-        bedrock_embeddings
-    )
-    vectorstore_faiss.save_local("faiss_index")
+    try:
+        vectorstore_faiss = FAISS.from_documents(
+            docs,
+            bedrock_embeddings
+        )
+        vectorstore_faiss.save_local("faiss_index")
+    except ValueError as e:
+        st.error(f"An error occurred while creating the vector store: {e}")
+        # Optionally, add more detailed logging
+        st.write("Debugging Information: ", str(e))
+
 
 def get_llm():
     # Use the correct text generation model
