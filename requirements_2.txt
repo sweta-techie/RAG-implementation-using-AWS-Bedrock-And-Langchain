@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain_community
+rank-bm25
+sentence-transformers
+transformers
+PyMuPDF
+Pillow
+boto3
+openai  # If using OpenAI's VLM
