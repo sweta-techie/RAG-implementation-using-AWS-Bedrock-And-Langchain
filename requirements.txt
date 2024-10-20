@@ -9,7 +9,8 @@ rank-bm25==0.2.2
 openai==0.27.5
 keybert==0.8.1
 nltk==3.8.1
-spacy==3.6.1
+spacy==3.5.3
+thinc==8.1.9
 scikit-learn==1.2.2
 PyMuPDF==1.23.7
 language-tool-python==2.7.1
@@ -17,5 +18,6 @@ language-tool-python==2.7.1
 # Additional Dependencies
 numpy==1.24.3
 torch==2.0.1
+Cython==0.29.36
 
 # Do not pin the 'packaging' version
