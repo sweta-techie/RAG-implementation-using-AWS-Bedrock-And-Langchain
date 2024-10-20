@@ -1,0 +1,8 @@
+LICENSE
+README.md
+my_class.cpp
+setup.py
+my_cpp_extension.egg-info/PKG-INFO
+my_cpp_extension.egg-info/SOURCES.txt
+my_cpp_extension.egg-info/dependency_links.txt
+my_cpp_extension.egg-info/top_level.txt

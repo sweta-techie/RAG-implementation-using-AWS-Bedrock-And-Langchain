@@ -21,19 +21,20 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 from sentence_transformers import SentenceTransformer, util
 from rank_bm25 import BM25Okapi
 import openai
-from openai.error import AuthenticationError, RateLimitError, OpenAIError
+from openai import AuthenticationError, RateLimitError, OpenAIError
 
 from langchain.schema import Document
 from keybert import KeyBERT
 import nltk  # For sentence tokenization
 
 import spacy  # For Named Entity Recognition
+from difflib import SequenceMatcher  # For fuzzy matching
 
 # -----------------------------
 # Streamlit Configuration
 # -----------------------------
-st.set_page_config(page_title="RAG PDF Q&A", layout="wide")
-st.header("Retrieval-Augmented Generation (RAG) PDF Q&A Application")
+st.set_page_config(page_title="Enhanced RAG PDF Q&A", layout="wide")
+st.header("Enhanced Retrieval-Augmented Generation (RAG) PDF Q&A Application")
 
 # -----------------------------
 # Configure Logging
@@ -141,9 +142,11 @@ def clean_text(text: str) -> str:
     Returns:
         str: Cleaned text.
     """
-    # Remove 'swipe right' and other artifacts
-    text = re.sub(r'swipe right', '', text, flags=re.IGNORECASE)
-    # Remove extra whitespace
+    # Remove variations of 'swipe right' with flexible spacing and word boundaries
+    text = re.sub(r'\bswipe\s+right\b', '', text, flags=re.IGNORECASE)
+    # Remove other known artifacts if any (add more patterns as needed)
+    # Example: text = re.sub(r'\bartifact_pattern\b', '', text, flags=re.IGNORECASE)
+    # Remove extra whitespace and line breaks
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
@@ -183,14 +186,14 @@ def extract_answer_spans(text: str, top_n: int = 5) -> List[str]:
     Returns:
         List[str]: List of extracted answer spans (main topics/subtopics).
     """
-    # Extract keywords/phrases using KeyBERT with adjusted parameters
+    # Extract keywords/phrases using KeyBERT with corrected parameters
     keywords = kw_model.extract_keywords(
         text,
-        keyphrase_ngram_range=(1, 3),  # Allow up to trigrams for more context
+        keyphrase_ngram_range=(1, 2),  # Limit to unigrams and bigrams
         stop_words='english',
-        use_maxsum=True,               # Use MaxSum for better keyword extraction
-        use_mmr=True,                  # Enable Maximal Marginal Relevance
-        diversity=0.55,                # Adjusted diversity for balance
+        use_maxsum=False,               # Disable MaxSum similarity
+        use_mmr=True,                   # Enable Maximal Marginal Relevance
+        diversity=0.7,                  # Adjust diversity for better coverage
         nr_candidates=20,
         top_n=top_n
     )
@@ -200,6 +203,8 @@ def extract_answer_spans(text: str, top_n: int = 5) -> List[str]:
     # Filter out generic terms if necessary
     GENERIC_TERMS = {'machine learning', 'artificial intelligence', 'ai'}
     answer_spans = [phrase for phrase in answer_spans if phrase.lower() not in GENERIC_TERMS]
+    
+    logger.debug(f"Filtered Answer Spans: {answer_spans}")
     
     return answer_spans
 
@@ -221,6 +226,7 @@ def is_answer_in_chunk(answer: str, chunk: str, threshold: float = 0.55) -> bool
     if len(answer_tokens) == 0:
         return False
     similarity = len(common_tokens) / len(answer_tokens)
+    logger.debug(f"Similarity between answer and chunk: {similarity}")
     return similarity >= threshold
 
 def process_uploaded_pdfs(uploaded_files) -> List[Document]:
@@ -371,13 +377,13 @@ def generate_questions(tokenizer, model, chunk: str, answer: str, similarity_mod
         outputs = model.generate(
             input_ids,
             max_length=128,
-            num_return_sequences=num_return_sequences,      # Generate as per required
-            do_sample=True,               # Enable sampling for diversity
-            top_k=50,                     # Top-K sampling
-            top_p=0.95,                   # Nucleus sampling
-            temperature=0.7,              # Controls randomness
-            repetition_penalty=1.2,       # Penalize repeated phrases
-            no_repeat_ngram_size=3        # Prevents repetition of n-grams
+            num_return_sequences=num_return_sequences,
+            do_sample=True,
+            top_k=50,
+            top_p=0.95,
+            temperature=0.7,
+            repetition_penalty=1.2,
+            no_repeat_ngram_size=3
         )
     except Exception as e:
         logger.error(f"Error during question generation: {e}")
@@ -403,8 +409,10 @@ def generate_questions(tokenizer, model, chunk: str, answer: str, similarity_mod
                 accepted_questions.append(q)
             else:
                 # Calculate similarity for rejection logging
-                similarity = util.cos_sim(similarity_model.encode(q, convert_to_tensor=True),
-                                          similarity_model.encode(answer, convert_to_tensor=True)).item()
+                similarity = util.cos_sim(
+                    similarity_model.encode(q, convert_to_tensor=True),
+                    similarity_model.encode(answer, convert_to_tensor=True)
+                ).item()
                 if similarity < 0.3:
                     rejected_questions.append((q, similarity))
                 else:
@@ -462,6 +470,7 @@ def extract_named_entities(text: str, nlp_model) -> List[Dict[str, Any]]:
     """
     doc = nlp_model(text)
     entities = [{"text": ent.text, "label": ent.label_} for ent in doc.ents]
+    logger.debug(f"Extracted Named Entities: {entities}")
     return entities
 
 def generate_ner_questions(entities: List[Dict[str, Any]]) -> List[str]:
@@ -478,7 +487,7 @@ def generate_ner_questions(entities: List[Dict[str, Any]]) -> List[str]:
     for ent in entities:
         entity = ent["text"]
         label = ent["label"]  # Corrected from 'label_' to 'label'
-        if label in [ "ORG", "GPE", "LOC", "EVENT", "PRODUCT", "WORK_OF_ART", "LAW"]:
+        if label in ["ORG", "GPE", "LOC", "EVENT", "PRODUCT", "WORK_OF_ART", "LAW"]:
             question = f"What is {entity}?"
             ner_questions.append(question)
             question = f"Describe {entity}."
@@ -487,6 +496,7 @@ def generate_ner_questions(entities: List[Dict[str, Any]]) -> List[str]:
             ner_questions.append(question)
     # Remove duplicates
     ner_questions = list(dict.fromkeys(ner_questions))
+    logger.debug(f"NER-based Questions: {ner_questions}")
     return ner_questions
 
 def get_answer_vlm(vlm_model, query: str, retrieved_docs: List[Document]) -> str:
@@ -522,6 +532,7 @@ def get_answer_vlm(vlm_model, query: str, retrieved_docs: List[Document]) -> str
             temperature=0.55,
         )
         answer = response.choices[0].message['content'].strip()
+        logger.debug(f"Generated Answer: {answer}")
         return answer
     except AuthenticationError:
         logger.error("Authentication with OpenAI API failed. Check your API key.")
@@ -648,9 +659,6 @@ def main():
         help="Adjust the similarity threshold for question relevance."
     )
 
-    # Checkbox for summarization
-    # summarize = st.checkbox("Summarize Document Before Processing")
-
     # Display current similarity threshold
     st.write(f"**Current Similarity Threshold:** {similarity_threshold}")
 
@@ -708,21 +716,6 @@ def main():
                 logger.warning("No documents extracted from uploaded PDFs.")
                 return
 
-            # Optionally summarize the content
-            # if summarize:
-            #     summarizer = load_summarization_model()
-            #     summarized_docs = []
-            #     for doc in docs:
-            #         summary = summarize_text(doc.page_content, summarizer)
-            #         summarized_doc = Document(page_content=summary)
-            #         summarized_docs.append(summarized_doc)
-            #     docs = summarized_docs
-            #     logger.info("Summarization applied to the document content.")
-            #     st.success("Document summarized successfully.")
-            #     # Display the summary
-            #     st.write("**Document Summary:**")
-            #     st.write(summarizer(docs[0].page_content, max_length=150, min_length=50, do_sample=False)[0]['summary_text'])
-
             # Setup retriever
             bm25, embedding_model, texts = setup_retriever(docs)
             st.session_state.bm25 = bm25
@@ -746,13 +739,6 @@ def main():
             logger.debug(f"Content for NER: {content[:500]}...")  # Log the first 500 characters
             named_entities = extract_named_entities(content, nlp)
             st.session_state.named_entities = named_entities
-
-            # if named_entities:
-            #     st.write("**Named Entities Extracted from Document:**")
-            #     for ent in named_entities:
-            #         st.write(f"- **{ent['text']}** ({ent['label']})")
-            # else:
-            #     st.write("No Named Entities were extracted from the document.")
 
             # Generate NER-based questions
             ner_questions = generate_ner_questions(named_entities)
@@ -791,7 +777,7 @@ def main():
                         continue
 
                     # Generate questions
-                    questions, _ = generate_questions(
+                    questions, rejected = generate_questions(
                         tokenizer,
                         qg_model,
                         chunk,
@@ -837,8 +823,8 @@ def main():
                         return
 
                 # Display a snippet of the content for verification
-                # st.write("**Content Snippet Used for Question Generation:**")
-                # st.write(content[:500] + "..." if len(content) > 500 else content)
+                st.write("**Content Snippet Used for Question Generation:**")
+                st.write(content[:500] + "..." if len(content) > 500 else content)
 
     # Display generated questions as clickable buttons
     if 'generated_questions' in st.session_state and st.session_state.generated_questions:
@@ -996,73 +982,9 @@ def main():
             elif rating == "Not Relevant":
                 st.warning("We're sorry. We'll work on generating better questions.")
 
-            # # Generate two additional questions from the answer
-            # answer_text = st.session_state.answers[st.session_state.selected_question]
-            # tokenizer, qg_model = load_qg_model()
-            # similarity_model = SentenceTransformer('all-MiniLM-L6-v2')  # Initialize once
-            # additional_questions = []
-            # answer_chunks = split_into_chunks(answer_text, max_length=500)
-            # for chunk in answer_chunks[:1]:  # Process only the first chunk for simplicity
-            #     answer_spans = extract_answer_spans(chunk, top_n=2)
-            #     for span in answer_spans:
-            #         questions, _ = generate_questions(
-            #             tokenizer,
-            #             qg_model,
-            #             chunk,
-            #             span,
-            #             similarity_model,
-            #             threshold=similarity_threshold,
-            #             num_return_sequences=1
-            #         )
-            #         if questions:
-            #             additional_questions.extend(questions)
-            #             if len(additional_questions) >=2:
-            #                 break
-            #     if len(additional_questions) >=2:
-            #         break
-
-            # # Deduplicate and limit to two questions
-            # unique_additional_questions = list(dict.fromkeys(additional_questions))[:2]
-            # if unique_additional_questions:
-            #     st.session_state.custom_generated_questions.extend([(q, similarity_threshold) for q in unique_additional_questions])
-            #     st.success("Additional Questions Generated from Answer:")
-            #     for idx, question in enumerate(unique_additional_questions):
-            #         # Use a unique prefix to namespace the keys
-            #         button_key = f"additional_custom_question_{idx}"
-            #         if st.button(question, key=button_key):
-            #             logger.info(f"Additional Custom Question clicked: {question}")
-            #             # Check if the answer already exists to avoid redundant calls
-            #             if question not in st.session_state.answers:
-            #                 with st.spinner("Fetching answer..."):
-            #                     try:
-            #                         vlm_model = load_vlm_model()  # Load your VLM here
-            #                         retrieved_docs = st.session_state.vectorstore_annoy.similarity_search(question, k=3)
-            #                         answer_new = get_answer_vlm(vlm_model, question, retrieved_docs)
-            #                         st.session_state.answers[question] = answer_new
-            #                         logger.info(f"Answer fetched for additional custom question: {question}")
-            #                     except Exception as e:
-            #                         logger.error(f"Error fetching answer for additional custom question '{question}': {e}")
-            #                         st.error(f"An error occurred while fetching the answer for the question: {question}")
-
-            #             st.session_state.selected_question = question
-
-            #     # Display the answer if available
-            #     if st.session_state.selected_question and st.session_state.selected_question in st.session_state.answers:
-            #         st.markdown(f"**Answer to:** {st.session_state.selected_question}")
-            #         st.write(st.session_state.answers[st.session_state.selected_question])
-                    
-            #         # Feedback Mechanism
-            #         rating = st.radio(
-            #             "How relevant is this question?", 
-            #             ("Highly Relevant", "Somewhat Relevant", "Not Relevant"), 
-            #             key=f"rating_additional_custom_question_{st.session_state.selected_question}"
-            #         )
-            #         if rating == "Highly Relevant":
-            #             st.success("Thank you for your feedback!")
-            #         elif rating == "Somewhat Relevant":
-            #             st.info("Thank you! We'll strive to improve.")
-            #         elif rating == "Not Relevant":
-            #             st.warning("We're sorry. We'll work on generating better questions.")
+            # Generate two additional questions from the answer
+            # (Optional: Can be enabled if needed)
+            # ...
 
     # Custom query from user
     st.subheader("Ask a Custom Question")
@@ -1176,8 +1098,8 @@ def main():
         st.session_state.selected_documents = []
         st.session_state.named_entities = []
         st.session_state.ner_questions = []
-        st.session_state.similarity_threshold = 0.55  # Reset similarity_threshold
-        st.session_state.prev_similarity_threshold = 0.55  # Reset previous similarity_threshold
+        st.session_state.similarity_threshold = 0.70  # Reset similarity_threshold
+        st.session_state.prev_similarity_threshold = 0.70  # Reset previous similarity_threshold
 
         # Delete all Annoy index files
         cleanup_old_annoy_indexes("annoy_index.ann")
