@@ -6,11 +6,11 @@ sentence-transformers==2.2.2
 rank-bm25==0.2.2
 
 # Other Necessary Libraries
-openai==0.27.5
+openai==0.27.10
 keybert==0.8.1
 nltk==3.8.1
 spacy==3.5.3
-thinc==8.1.9
+thinc==8.1.10
 scikit-learn==1.2.2
 PyMuPDF==1.23.7
 language-tool-python==2.7.1
