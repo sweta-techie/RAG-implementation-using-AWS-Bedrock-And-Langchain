@@ -1,3 +1,5 @@
+--prefer-binary
+
 # Core Dependencies
 streamlit==1.25.0
 langchain==0.0.305
@@ -18,7 +20,7 @@ language-tool-python==2.7.1
 # Additional Dependencies
 numpy==1.24.3
 torch==2.0.1
-Cython==3.0.0
-pip==24.2
+Cython==0.29.36
+pip>=23.0
 
 # Do not pin the 'packaging' version
