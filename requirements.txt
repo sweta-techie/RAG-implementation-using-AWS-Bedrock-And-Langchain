@@ -5,8 +5,8 @@
 #    pip-compile --find-links=https://download.pytorch.org/whl/cpu/torch_stable.html requirements.in
 #
 --find-links https://download.pytorch.org/whl/cpu/torch_stable.html
-torch==2.5.0+cpu
-torchvision==0.15.2+cpu
+torch==2.5.0
+torchvision==0.15.2
 aiohappyeyeballs==2.4.3
     # via
     #   -r requirements.in
