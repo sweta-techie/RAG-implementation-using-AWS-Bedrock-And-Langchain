@@ -25,19 +25,21 @@ nltk==3.8.1
 # Spacy for NLP tasks
 spacy==3.6.0
 
-# Core dependencies for machine learning and other tasks
+# Scikit-learn for machine learning models
 scikit-learn==1.2.2
+
+# PyMuPDF for PDF text extraction
 PyMuPDF==1.23.7
+
+# Language tool for grammar checks
 language-tool-python==2.7.1
 
-# Torch version compatible with Python 3.10
-torch==2.0.1
+# Torch for deep learning
+torch==2.0.1  # Ensure compatibility with Python 3.10
 
-# Other required packages for compatibility
+# Core dependencies
 thinc==8.1.10
-Cython==0.29.36
-numpy==1.26.0  # Updated to avoid conflicts with pandas
-pandas==2.2.3
 
-# Python distutils required for system dependencies
-# python3-distutils
+# Optional dependencies for compatibility
+Cython==0.29.36
+numpy==1.24.3
