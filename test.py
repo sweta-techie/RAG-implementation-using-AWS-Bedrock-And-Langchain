@@ -27,7 +27,7 @@ from nltk.tokenize import sent_tokenize
 # -----------------------------
 st.set_page_config(page_title="RAG PDF Q&A with GPT-4", layout="wide")
 st.title("Retrieval-Augmented Generation (RAG) PDF Q&A Application with GPT-4")
-st.write(f"Python version: {sys.version}")
+# st.write(f"Python version: {sys.version}")
 # -----------------------------
 # OpenAI API Configuration
 # -----------------------------

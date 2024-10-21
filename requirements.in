@@ -13,11 +13,11 @@ sympy==1.13.1
 # Build tools
 setuptools>=65.5.0
 wheel
-cython>=0.29.36
+cython==0.29.36
 
 # Core dependencies
 numpy>=1.25.0
-scikit-learn>=1.2.0
+scikit-learn==1.2.2
 
 # Rest of your requirements
 aiohappyeyeballs==2.4.3
