@@ -1,8 +1,14 @@
-# Specify the PyTorch CPU wheels repository
+# requirements.in
+
+# Specify the PyTorch CPU-specific wheels repository
 -f https://download.pytorch.org/whl/cpu/torch_stable.html
 
-# PyTorch and torchvision with +cpu suffix (if applicable)
+# PyTorch and torchvision with compatible versions
+torch==2.0.1
+torchvision==0.15.2
 
+# Align sympy with torch's requirement
+sympy==1.13.1
 
 # Build tools
 setuptools>=65.5.0
@@ -12,6 +18,7 @@ cython>=0.29.36
 # Core dependencies
 numpy>=1.25.0
 scikit-learn>=1.2.0
+
 # Rest of your requirements
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
@@ -29,7 +36,6 @@ charset-normalizer==3.4.0
 click==8.1.7
 confection==0.1.5
 cymem==2.0.8
-cython==0.29.36
 dataclasses-json==0.6.7
 exceptiongroup==1.2.2
 filelock==3.16.1
@@ -65,7 +71,6 @@ narwhals==1.9.4
 networkx==3.4.1
 nltk==3.8.1
 numexpr==2.10.1
-# numpy==1.24.3
 openai==0.27.10
 packaging==23.2
 pandas==2.0.0
@@ -107,7 +112,7 @@ spacy-loggers==1.0.5
 sqlalchemy==2.0.36
 srsly==2.4.8
 streamlit==1.25.0
-sympy==1.13.3
+# sympy==1.13.3
 tenacity==8.5.0
 thinc==8.1.10
 threadpoolctl==3.5.0
