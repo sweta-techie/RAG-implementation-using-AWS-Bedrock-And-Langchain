@@ -1,8 +1,17 @@
-# PyTorch Installation
+# Specify the PyTorch CPU wheels repository
 -f https://download.pytorch.org/whl/cpu/torch_stable.html
-# torch==2.0.1
-# torchvision==0.15.2
 
+# PyTorch and torchvision with +cpu suffix (if applicable)
+
+
+# Build tools
+setuptools>=65.5.0
+wheel
+cython>=0.29.36
+
+# Core dependencies
+numpy>=1.25.0
+scikit-learn>=1.2.0
 # Rest of your requirements
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
@@ -56,7 +65,7 @@ narwhals==1.9.4
 networkx==3.4.1
 nltk==3.8.1
 numexpr==2.10.1
-numpy==1.24.3
+# numpy==1.24.3
 openai==0.27.10
 packaging==23.2
 pandas==2.0.0
