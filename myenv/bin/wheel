@@ -1,4 +1,4 @@
-#!/Users/sweta/Documents/CryptoClear/Projects/Projects/RAG-implementation-using-Amazon-Bedrock-And-Langchain/myenv/bin/python3.10
+#!/Users/sweta/Documents/CryptoClear/Projects/Projects/RAG-implementation-using-Amazon-Bedrock-And-Langchain/myenv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
