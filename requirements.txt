@@ -1,4 +1,4 @@
-# Core Dependencies
+ # Core Dependencies
 streamlit==1.25.0
 langchain==0.0.305
 transformers==4.34.0
@@ -17,11 +17,6 @@ language-tool-python==2.7.1
 # Additional Dependencies
 numpy==1.24.3
 torch==2.0.1
-Cython==0.29.36
+Cython==0.29.36  # Ensures Cython compatibility for thinc
 setuptools>=65.5.0
 wheel>=0.38.4
-pip>=24.2
-
-# Do not pin the 'packaging' version
-
-
