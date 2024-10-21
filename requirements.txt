@@ -22,8 +22,8 @@ keybert==0.8.1
 # Natural Language Toolkit (NLTK)
 nltk==3.8.1
 
-# Spacy for NLP tasks (use compatible versions)
-spacy==3.6.0  
+# Spacy for NLP tasks
+spacy==3.6.0  # Downgrade to 3.6.0 to avoid issues with 3.6.1
 
 # Add any other specific packages you need
 scikit-learn==1.2.2
@@ -31,7 +31,7 @@ PyMuPDF==1.23.7
 language-tool-python==2.7.1
 
 # Core dependencies
-thinc==8.1.10  # Use this earlier version to avoid issues
+thinc==8.1.10  # Use this earlier version to avoid issues with the latest build errors
 torch==2.0.1   # Ensure compatibility with Python 3.10
 
 # Optional dependencies for compatibility
