@@ -148,7 +148,7 @@ nltk==3.8.1
     #   sentence-transformers
 numexpr==2.10.1
     # via langchain
-numpy==1.26.0
+numpy==1.24.3
     # via
     #   -r requirements.in
     #   blis
@@ -179,9 +179,7 @@ packaging==23.2
     #   thinc
     #   transformers
 pandas==2.2.3
-    # via
-    #   -r requirements.in
-    #   streamlit
+    # via streamlit
 pathlib-abc==0.1.1
     # via pathy
 pathy==0.11.0
@@ -317,12 +315,12 @@ tokenizers==0.14.1
     # via transformers
 toml==0.10.2
     # via streamlit
-torch==2.0.1
+torch==2.0.0
     # via
     #   -r requirements.in
     #   sentence-transformers
     #   torchvision
-torchvision==0.15.2
+torchvision==0.15.1
     # via sentence-transformers
 tornado==6.4.1
     # via streamlit
