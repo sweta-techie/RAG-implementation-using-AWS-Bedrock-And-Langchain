@@ -465,12 +465,12 @@ toml==0.10.2
     # via
     #   -r requirements.in
     #   streamlit
-torch==2.0.1
+# torch==2.0.1
     # via
     #   -r requirements.in
     #   sentence-transformers
     #   torchvision
-torchvision==0.15.2
+# torchvision==0.15.2
     # via
     #   -r requirements.in
     #   sentence-transformers
