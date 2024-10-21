@@ -315,12 +315,12 @@ tokenizers==0.14.1
     # via transformers
 toml==0.10.2
     # via streamlit
-torch==2.0.0
+torch==2.0.1
     # via
     #   -r requirements.in
     #   sentence-transformers
     #   torchvision
-torchvision==0.15.1
+torchvision==0.15.2
     # via sentence-transformers
 tornado==6.4.1
     # via streamlit
