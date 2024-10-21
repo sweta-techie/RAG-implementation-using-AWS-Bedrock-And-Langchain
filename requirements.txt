@@ -22,16 +22,24 @@ keybert==0.8.1
 # Natural Language Toolkit (NLTK)
 nltk==3.8.1
 
-# Spacy for NLP tasks (Downgraded to 3.5.2)
-spacy==3.5.2
+# Spacy for NLP tasks
+spacy==3.6.0  # Aligned with thinc 8.1.10
 
 # Core dependencies
-thinc==8.1.9   # Use this version to avoid issues with latest build errors
-torch==2.0.0   # Ensure compatibility with Python 3.10
+thinc==8.1.10  # Compatible version with spacy
+
+# Torch for model support
+torch==2.1.0   # Upgraded to resolve previous issues
+
+# Scikit-learn for ML models
+scikit-learn==1.2.2
+
+# PyMuPDF for PDF handling
+PyMuPDF==1.23.7
+
+# Language Tool for grammar checks
+language-tool-python==2.7.1
 
 # Optional dependencies for compatibility
 Cython==0.29.36
 numpy==1.24.3
-scikit-learn==1.2.2
-PyMuPDF==1.23.7
-language-tool-python==2.7.1
