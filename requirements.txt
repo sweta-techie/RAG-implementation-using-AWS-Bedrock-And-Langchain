@@ -14,7 +14,7 @@ sentence-transformers==2.2.2
 rank-bm25==0.2.2
 
 # OpenAI for GPT integration
-openai==0.28.0  # Updated to avoid RateLimitError import issue
+openai==0.27.10
 
 # Keyword extraction
 keybert==0.8.1
@@ -23,25 +23,21 @@ keybert==0.8.1
 nltk==3.8.1
 
 # Spacy for NLP tasks
-spacy==3.6.0  # Downgrade to 3.6.0 to avoid recent issues with 3.6.1
+spacy==3.6.0  # Ensuring compatibility
 
-# Scikit-learn for machine learning models
+# Scikit-learn for machine learning utilities
 scikit-learn==1.2.2
 
 # PyMuPDF for PDF processing
 PyMuPDF==1.23.7
 
-# Language tool for grammar checking
+# LanguageTool for grammar checking
 language-tool-python==2.7.1
 
-# Core dependencies
-thinc==8.1.10  # To match spacy version and avoid issues with 8.2.x
-torch==2.0.1  # To ensure compatibility with spacy and transformers
+# Core dependencies for Thinc and Torch
+thinc==8.1.10  # Ensure compatibility with Spacy
+torch==2.0.1  # Ensure compatibility with Python 3.10
 
-# Optional dependencies for compatibility
+# Optional dependencies for compatibility and performance
 Cython==0.29.36
 numpy==1.24.3
-
-# Other dependencies based on your code
-python-dotenv==1.0.0  # For loading environment variables
-requests==2.31.0  # For HTTP requests (used in PDF download function)
