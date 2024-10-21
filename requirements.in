@@ -1,45 +1,17 @@
-# Streamlit for app interface
 streamlit==1.25.0
-
-# Langchain for RAG implementation
 langchain==0.0.305
-
-# Transformers for GPT-4 model integration
 transformers==4.34.0
-
-# Sentence transformers for embeddings
 sentence-transformers==2.2.2
-
-# BM25 for ranking
 rank-bm25==0.2.2
-
-# OpenAI for GPT integration
 openai==0.27.10
-
-# Keyword extraction
 keybert==0.8.1
-
-# Natural Language Toolkit (NLTK)
 nltk==3.8.1
-
-# Spacy for NLP tasks
 spacy==3.6.0
-
-# Scikit-learn for machine learning models
 scikit-learn==1.2.2
-
-# PyMuPDF for PDF text extraction
 PyMuPDF==1.23.7
-
-# Language tool for grammar checks
 language-tool-python==2.7.1
-
-# Torch for deep learning
-torch==2.0.1  # Ensure compatibility with Python 3.10
-
-# Core dependencies
 thinc==8.1.10
-
-# Optional dependencies for compatibility
+torch==2.0.1
 Cython==0.29.36
 numpy==1.24.3
+pandas==2.0.0   # Ensure compatibility with numpy

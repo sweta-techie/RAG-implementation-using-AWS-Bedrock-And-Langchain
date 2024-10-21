@@ -178,8 +178,10 @@ packaging==23.2
     #   streamlit
     #   thinc
     #   transformers
-pandas==2.2.3
-    # via streamlit
+pandas==2.0.0
+    # via
+    #   -r requirements.in
+    #   streamlit
 pathlib-abc==0.1.1
     # via pathy
 pathy==0.11.0
