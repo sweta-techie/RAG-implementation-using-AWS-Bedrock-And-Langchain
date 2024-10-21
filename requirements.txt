@@ -1,5 +1,5 @@
 -f https://download.pytorch.org/whl/cpu/torch_stable.html
-torch==2.0.1+cpu
+torch==2.2.2+cpu
 torchvision==0.15.2+cpu
 
 
@@ -547,3 +547,6 @@ zipp==3.20.2
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+setuptools>=65.5.0
+wheel
+

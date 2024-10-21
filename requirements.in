@@ -1,7 +1,7 @@
 # PyTorch Installation
 -f https://download.pytorch.org/whl/cpu/torch_stable.html
-torch==2.0.1
-torchvision==0.15.2
+# torch==2.0.1
+# torchvision==0.15.2
 
 # Rest of your requirements
 aiohappyeyeballs==2.4.3
